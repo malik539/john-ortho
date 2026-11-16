@@ -240,14 +240,18 @@ h1 em, h2 em { font-weight: 500; }
 .card-grid { display: grid; gap: 1rem; margin-bottom: 2rem; }
 @media (min-width: 720px) { .card-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
 .card {
-  background: var(--paper); border-radius: var(--radius); padding: 1.5rem;
+  background: var(--paper); border-radius: var(--radius); padding: 0; overflow: hidden; display: flex; flex-direction: column;
   border: 1px solid var(--line); box-shadow: var(--shadow-sm);
   transition: transform .2s ease, box-shadow .2s ease;
 }
 .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-.card h3 { margin: .9rem 0 .4rem; font-size: 1.15rem; }
+.card-body { padding: 0 1.4rem 1.5rem; position: relative; }
+.card h3 { margin: .7rem 0 .4rem; font-size: 1.15rem; }
 .card p { font-size: .95rem; color: var(--ink-2); }
-.card-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, rgba(0,174,239,.16), rgba(153,202,60,.16)); color: var(--blue-text); }
+.card-media { margin: 0; aspect-ratio: 3 / 2; background: var(--sand); }
+.card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.card:hover .card-media img { transform: scale(1.03); }
+.card-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-top: -24px; border-radius: 14px; background: var(--paper); color: var(--blue-text); box-shadow: var(--shadow-sm); border: 1px solid var(--line); }
 .card-icon svg { width: 24px; height: 24px; fill: currentColor; }
 
 /* ----------------------------------------------------------- Doctor section */

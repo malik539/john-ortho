@@ -55,7 +55,7 @@ All copy comes from the client brief or pages verified on johnortho.com on 2026-
 
 1. **"The only practice in the area…"** is client positioning, not independently verified. It appears once, verbatim, in the Facial Aesthetic Plan section.
 2. **"Trustee"** is used exactly as supplied ("Parkland community member and trustee") with no organization named.
-3. **Imagery**: two photos were supplied. The Drive file (`Eliane-3550_sk.jpg`, Dr. John with a patient) is cropped for the hero and the Facial Aesthetic Plan section; the separate headshot (`dr-john-headshot-source.webp`, 687px wide) is used in the doctor section. A higher-resolution headshot would help on large screens. If more approved patient/practice photos exist, the plan section image is the first one to swap.
+3. **Imagery**: two photos were supplied. The Drive file (`Eliane-3550_sk.jpg`, Dr. John with a patient) is cropped for the hero and the Facial Aesthetic Plan section; the separate headshot (`dr-john-headshot-source.webp`, 687px wide) is used in the doctor section. A higher-resolution headshot would help on large screens. Three further supplied photos (teens, kids with braces, group of kids) head the three Treatment Options cards; the teens photo is cropped so the phone number printed on the beach balls stays out of frame. If more approved patient/practice photos exist, the plan section image is the first one to swap.
 4. **Consent wording** (see table above).
 5. The main site advertises "0% Financing" and "Gold Plus Invisalign Provider" on some pages; these were **not** used because the brief limits financing copy to "Low Monthly Payments & In-House Financing Available".
 

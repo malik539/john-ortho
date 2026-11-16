@@ -3,9 +3,9 @@
 Static, dependency-free landing page for the **Facial Aesthetic Plan** Google Ads campaign.
 
 ```
-index.html            page markup (6 sections + header, footer, mobile sticky CTA)
+index.html            page markup (offer bar, header, 6 sections, footer, mobile sticky CTA, popup)
 assets/css/styles.css mobile-first styles
-assets/js/main.js     phone wiring, form validation/submit, sticky bar, header shadow
+assets/js/main.js     phone wiring, popup, scroll reveal, form validation/submit, sticky bar
 assets/img/           optimized WebP/JPEG crops + logo (sources kept: *-source.*)
 ```
 
@@ -17,11 +17,17 @@ python3 -m http.server 8765
 
 then open http://localhost:8765/index.html.
 
+## How the form and popup work
+
+There is exactly **one** form instance. It lives inline in the final section (above the footer) so it works without JavaScript. Every CTA with `data-open-form` opens a native `<dialog>` and *moves* that same form card into it; closing (Escape, backdrop click, X) moves it back. No duplicate IDs, one set of handlers, and typed values survive open/close. A `consultation_form_open` event is pushed to `dataLayer` when the popup opens.
+
+Scroll-reveal uses `data-reveal` + IntersectionObserver, is disabled under `prefers-reduced-motion`, and content stays fully visible when JS is off (the effect is scoped to `html.js`).
+
 ## Pending before launch (not wired on purpose)
 
 | Item | Where | Status |
 | --- | --- | --- |
-| Campaign phone number | `CONFIG.phone` / `CONFIG.phoneDisplay` in `assets/js/main.js` | Placeholder `XXX-xxx-xxxx`. Until set, every call button points to the form (no fake `tel:`). The main-site numbers were deliberately **not** used. |
+| Campaign phone number | `CONFIG.phone` / `CONFIG.phoneDisplay` in `assets/js/main.js` | Placeholder `XXX-xxx-xxxx`. Until set, every call button opens the consultation popup (no fake `tel:`). The main-site numbers were deliberately **not** used. |
 | Lead form endpoint | `CONFIG.formEndpoint` in `assets/js/main.js` | Empty. The form validates client-side, then shows an honest "not connected yet" notice. It does **not** pretend to submit. Field `name`s mirror the site's Gravity Form #8 (`input_1`, `input_12`, `input_3`, `input_2`, `input_13`, `input_8`, `input_11`) so a GF REST/webhook or GHL/LeadConnector mapping is straightforward. A direct cross-domain POST to the WordPress Gravity Form will not work (nonce/state/captcha), so use a webhook or embed. |
 | Thank-you redirect | `CONFIG.thankYouUrl` | Optional. If empty, inline confirmation is shown and `dataLayer.push({event:'consultation_form_submit'})` fires. |
 | GTM / GA4 / Google Ads / Meta Pixel | commented slot in `<head>` of `index.html` | Not added. The main site uses GTM container `GTM-5RTVLJZ`; confirm with the client before reusing it. |
@@ -45,9 +51,11 @@ All copy comes from the client brief or pages verified on johnortho.com on 2026-
 
 ## Items flagged for client review
 
+0. **Headline**: the client's exact headline is preserved as the full H1 text. It is now typeset as a kicker ("More than straight teeth.") above the main line ("A smile designed to make you look younger.") for impact. No words were changed.
+
 1. **"The only practice in the area…"** is client positioning, not independently verified. It appears once, verbatim, in the Facial Aesthetic Plan section.
 2. **"Trustee"** is used exactly as supplied ("Parkland community member and trustee") with no organization named.
-3. **Imagery**: only one photo was supplied (the Drive link is a single file, `Eliane-3550_sk.jpg`). It is used in three crops: hero avatar, Facial Aesthetic Plan section (Dr. John with patient), and the doctor section. If more approved patient/practice photos exist, the plan section image is the first one to swap.
+3. **Imagery**: only one photo was supplied (the Drive link is a single file, `Eliane-3550_sk.jpg`). It is used in three crops: hero (Dr. John with patient), Facial Aesthetic Plan section (patient smile), and the doctor section (Dr. John). If more approved patient/practice photos exist, the plan section image is the first one to swap.
 4. **Consent wording** (see table above).
 5. The main site advertises "0% Financing" and "Gold Plus Invisalign Provider" on some pages; these were **not** used because the brief limits financing copy to "Low Monthly Payments & In-House Financing Available".
 

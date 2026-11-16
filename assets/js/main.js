@@ -7,7 +7,7 @@
      CONFIG — fill these in when the campaign assets are provided.
      - phone: campaign tracking number in E.164, e.g. "+19545551234".
        Leave empty until provided: call buttons then show the placeholder
-       and scroll to the form instead of dialing a fake number.
+       and open the consultation form instead of dialing a fake number.
      - formEndpoint: URL that accepts the POSTed lead (GHL / LeadConnector
        webhook, Gravity Forms REST, Zapier, etc.). Leave empty until wired:
        the form will NOT pretend to submit.
@@ -21,6 +21,8 @@
     thankYouUrl: ''
   };
 
+  document.documentElement.classList.add('js');
+
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
 
@@ -30,10 +32,12 @@
     if (CONFIG.phone) {
       a.setAttribute('href', 'tel:' + CONFIG.phone);
       a.removeAttribute('data-tel-pending');
+      a.removeAttribute('data-open-form');
     } else {
-      // No real number yet: keep the link pointing at the form.
+      // No real number yet: the call buttons open the consultation form instead.
       a.setAttribute('href', '#consultation');
       a.setAttribute('data-tel-pending', 'true');
+      a.setAttribute('data-open-form', '');
       a.setAttribute('title', 'Phone number coming soon. Request a free consultation instead.');
     }
   });
@@ -44,27 +48,87 @@
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 
-  /* --------------------------------------- Smooth focus for CTA links */
-  var firstField = $('#first-name');
-  $$('a[href="#consultation"]').forEach(function (a) {
-    a.addEventListener('click', function () {
-      // After the browser scrolls, move focus to the first field (no page jump).
-      window.setTimeout(function () {
-        if (firstField && window.matchMedia('(min-width: 1024px)').matches) {
-          firstField.focus({ preventScroll: true });
-        }
-      }, 450);
+  /* ------------------------------------------------------------ Popup
+     The single form (#consultation) lives inline above the footer. Opening the
+     popup MOVES it into the dialog; closing moves it back. One form, one set
+     of handlers, no duplicate IDs. */
+  var modal = $('#consult-modal');
+  var slot = $('#modal-slot');
+  var formHome = $('#form-home');
+  var formCard = $('#consultation');
+  var sticky = $('#sticky-cta');
+  var lastTrigger = null;
+  var supportsDialog = !!(modal && typeof modal.showModal === 'function');
+
+  function openForm(trigger) {
+    lastTrigger = trigger || null;
+    if (!supportsDialog) {
+      formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (modal.open) return;
+    slot.appendChild(formCard);
+    modal.showModal();
+    modal.scrollTop = 0;
+    document.body.classList.add('modal-open');
+    if (sticky) sticky.classList.add('is-hidden');
+    window.setTimeout(function () { var f = $('#first-name'); if (f) f.focus({ preventScroll: true }); }, 80);
+    if (typeof window.dataLayer !== 'undefined') window.dataLayer.push({ event: 'consultation_form_open' });
+  }
+  function closeForm() {
+    if (!supportsDialog || !modal.open) return;
+    modal.close();
+  }
+  if (supportsDialog) {
+    modal.addEventListener('close', function () {
+      formHome.appendChild(formCard);
+      document.body.classList.remove('modal-open');
+      if (sticky) sticky.classList.remove('is-hidden');
+      if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus({ preventScroll: true });
     });
+    // Click on the dimmed backdrop closes.
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeForm(); });
+  }
+  document.addEventListener('click', function (e) {
+    var opener = e.target.closest('[data-open-form]');
+    if (opener) {
+      // Real phone links keep dialing; everything else opens the popup.
+      var href = opener.getAttribute('href') || '';
+      if (href.indexOf('tel:') === 0) return;
+      e.preventDefault();
+      openForm(opener);
+      return;
+    }
+    if (e.target.closest('[data-close-form]')) { e.preventDefault(); closeForm(); }
   });
 
-  /* ------------------------- Sticky bar: hide while the form is visible */
-  var sticky = $('#sticky-cta');
-  var formCard = $('#consultation');
-  if (sticky && formCard && 'IntersectionObserver' in window) {
+  /* ------------------------- Sticky bar: hide while inline form is visible */
+  if (sticky && formHome && 'IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { sticky.classList.toggle('is-hidden', e.isIntersecting); });
-    }, { threshold: 0.15 });
-    io.observe(formCard);
+      entries.forEach(function (en) {
+        if (supportsDialog && modal.open) return;
+        sticky.classList.toggle('is-hidden', en.isIntersecting);
+      });
+    }, { threshold: 0.2 });
+    io.observe(formHome);
+  }
+
+  /* --------------------------------------------------- Scroll reveal */
+  var revealEls = $$('[data-reveal]');
+  if ('IntersectionObserver' in window && revealEls.length) {
+    var ro = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); ro.unobserve(en.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    revealEls.forEach(function (el) { ro.observe(el); });
+    // Anything already in view on load shows immediately (no blank first paint).
+    window.requestAnimationFrame(function () {
+      revealEls.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('in');
+      });
+    });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('in'); });
   }
 
   /* ---------------------------------------------------- Footer year */

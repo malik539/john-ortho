@@ -27,7 +27,7 @@ Scroll-reveal uses `data-reveal` + IntersectionObserver, is disabled under `pref
 
 | Item | Where | Status |
 | --- | --- | --- |
-| Campaign phone number | `CONFIG.phone` / `CONFIG.phoneDisplay` in `assets/js/main.js` | Placeholder `XXX-xxx-xxxx`. Until set, every call button opens the consultation popup (no fake `tel:`). The main-site numbers were deliberately **not** used. |
+| Campaign phone number | `CONFIG.phone` / `CONFIG.phoneDisplay` in `assets/js/main.js` and the `tel:` links in `index.html` | Set to **754-335-7893** (`+17543357893`) on 2026-11-23. Call buttons dial it. The main-site numbers are not used. |
 | Lead form endpoint | `CONFIG.formEndpoint` in `assets/js/main.js` | Empty. The form validates client-side, then shows an honest "not connected yet" notice. It does **not** pretend to submit. Field `name`s mirror the site's Gravity Form #8 (`input_1`, `input_12`, `input_3`, `input_2`, `input_13`, `input_8`, `input_11`) so a GF REST/webhook or GHL/LeadConnector mapping is straightforward. A direct cross-domain POST to the WordPress Gravity Form will not work (nonce/state/captcha), so use a webhook or embed. |
 | Thank-you redirect | `CONFIG.thankYouUrl` | Optional. If empty, inline confirmation is shown and `dataLayer.push({event:'consultation_form_submit'})` fires. |
 | GTM / GA4 / Google Ads / Meta Pixel | commented slot in `<head>` of `index.html` | Not added. The main site uses GTM container `GTM-5RTVLJZ`; confirm with the client before reusing it. |

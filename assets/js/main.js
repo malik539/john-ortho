@@ -15,8 +15,8 @@
        Ads / GA4 conversion pages). Leave empty to show inline confirmation.
   ------------------------------------------------------------------ */
   var CONFIG = {
-    phone: '',
-    phoneDisplay: 'XXX-xxx-xxxx',
+    phone: '+17543357893',
+    phoneDisplay: '754-335-7893',
     formEndpoint: '',
     thankYouUrl: ''
   };
